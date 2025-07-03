@@ -1,0 +1,24 @@
+Agentic RAG System Documentation
+
+This is a comprehensive AI-powered system that combines document analysis, web search, and voice input capabilities.
+
+Key Features:
+- Document Upload and Processing: Users can upload PDF, DOC, TXT, and image files
+- Voice Input: Speech-to-text functionality using advanced AI models
+- Web Search Integration: Real-time web search capabilities
+- Citation System: Automatic citation generation with source tracking
+- Multi-modal AI: Support for both Gemini and Claude AI models
+
+Technical Architecture:
+- Backend: FastAPI with Python
+- Frontend: Next.js with React and Tailwind CSS
+- Vector Database: ChromaDB for document embeddings
+- AI Models: Gemini 2.0 Flash Lite for text generation
+- Embedding Model: Sentence Transformers for semantic search
+
+The system uses Retrieval-Augmented Generation (RAG) to provide accurate, well-sourced answers by combining information from:
+1. Uploaded documents
+2. Web search results  
+3. Google Drive files (when configured)
+
+This test document demonstrates the document indexing and search capabilities of the Agentic RAG system. 
