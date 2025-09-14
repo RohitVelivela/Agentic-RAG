@@ -13,7 +13,7 @@ from datetime import datetime
 import chromadb
 from sentence_transformers import SentenceTransformer
 import google.generativeai as genai
-import anthropic
+# import anthropic  # Using Gemini instead
 
 from app.config import settings
 from app.models.schemas import (
@@ -63,9 +63,9 @@ class RAGService:
                 genai.configure(api_key=settings.gemini_api_key)
                 self.genai_client = genai.GenerativeModel(settings.gemini_chat_model)
                 logger.info("Gemini client initialized for RAG")
-            elif settings.ai_provider == "claude" and settings.claude_api_key:
-                self.claude_client = anthropic.AsyncAnthropic(api_key=settings.claude_api_key)
-                logger.info("Claude client initialized for RAG")
+            # elif settings.ai_provider == "claude" and settings.claude_api_key:
+            #     self.claude_client = anthropic.AsyncAnthropic(api_key=settings.claude_api_key)
+            #     logger.info("Claude client initialized for RAG")
             else:
                 logger.warning("No AI client available for text generation")
         except Exception as e:
@@ -313,8 +313,8 @@ Answer:"""
             
             if settings.ai_provider == "gemini" and self.genai_client:
                 return await self._generate_with_gemini(prompt)
-            elif settings.ai_provider == "claude" and self.claude_client:
-                return await self._generate_with_claude(prompt)
+            # elif settings.ai_provider == "claude" and self.claude_client:
+            #     return await self._generate_with_claude(prompt)
             else:
                 return "No AI provider available for text generation."
             
@@ -343,21 +343,21 @@ Answer:"""
             logger.error(f"Gemini generation failed: {e}")
             return "Error generating response with Gemini"
     
-    async def _generate_with_claude(self, prompt: str) -> str:
-        """Generate response using Claude"""
-        try:
-            message = await self.claude_client.messages.create(
-                model=settings.claude_chat_model,
-                max_tokens=500,
-                temperature=0.3,
-                messages=[{"role": "user", "content": prompt}]
-            )
-            
-            return message.content[0].text if message.content else "Unable to generate response"
-            
-        except Exception as e:
-            logger.error(f"Claude generation failed: {e}")
-            return "Error generating response with Claude"
+    # async def _generate_with_claude(self, prompt: str) -> str:
+    #     """Generate response using Claude"""
+    #     try:
+    #         message = await self.claude_client.messages.create(
+    #             model=settings.claude_chat_model,
+    #             max_tokens=500,
+    #             temperature=0.3,
+    #             messages=[{"role": "user", "content": prompt}]
+    #         )
+    #
+    #         return message.content[0].text if message.content else "Unable to generate response"
+    #
+    #     except Exception as e:
+    #         logger.error(f"Claude generation failed: {e}")
+    #         return "Error generating response with Claude"
     
     async def _generate_embeddings(self, texts: List[str]) -> List[List[float]]:
         """Generate embeddings for texts"""

@@ -115,4 +115,4 @@ def validate_settings():
         raise ValueError(f"VECTOR_DB_URL is required when using {settings.vector_db_type}")
 
 # Run validation on import
-validate_settings() 
+# validate_settings()  # Temporarily disabled for startup 

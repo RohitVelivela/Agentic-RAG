@@ -23,7 +23,7 @@ import numpy as np
 # from unstructured.partition.pdf import partition_pdf  # Optional - commented out for minimal setup
 # from unstructured.documents.elements import ElementMetadata  # Optional - commented out for minimal setup
 import google.generativeai as genai
-import anthropic
+# import anthropic  # Using Gemini instead
 
 from app.config import settings
 from app.models.schemas import (
