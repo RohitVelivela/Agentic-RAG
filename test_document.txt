@@ -1,24 +1,50 @@
-Agentic RAG System Documentation
+Updated todo list
 
-This is a comprehensive AI-powered system that combines document analysis, web search, and voice input capabilities.
+Here's how you can walk your PM through it:
 
-Key Features:
-- Document Upload and Processing: Users can upload PDF, DOC, TXT, and image files
-- Voice Input: Speech-to-text functionality using advanced AI models
-- Web Search Integration: Real-time web search capabilities
-- Citation System: Automatic citation generation with source tracking
-- Multi-modal AI: Support for both Gemini and Claude AI models
+---
 
-Technical Architecture:
-- Backend: FastAPI with Python
-- Frontend: Next.js with React and Tailwind CSS
-- Vector Database: ChromaDB for document embeddings
-- AI Models: Gemini 2.0 Flash Lite for text generation
-- Embedding Model: Sentence Transformers for semantic search
+**The Big Picture**
 
-The system uses Retrieval-Augmented Generation (RAG) to provide accurate, well-sourced answers by combining information from:
-1. Uploaded documents
-2. Web search results  
-3. Google Drive files (when configured)
+We built a Compliance Evaluator that sits inside the Marketing Collaboration Centre API. Every time a campaign brief is generated, the compliance evaluator automatically runs on it — checks it, fixes what it can, and returns a corrected brief. That's the MVP.
 
-This test document demonstrates the document indexing and search capabilities of the Agentic RAG system. 
+---
+
+**What happens step by step**
+
+**Step 1 — Input Validation & Section Extraction**
+The brief comes in as a JSON with 11 sections. We validate it and extract each section for evaluation.
+
+**Step 2 — Rule Loader**
+We load all active compliance rules from Cosmos DB at runtime. There are 833 rules across categories — deterministic rules (regex, grammar, formatting) and contextual rules (tone, brand alignment, claims). Rules are versioned and tagged per section.
+
+**Step 3 — Two Evaluators run in parallel**
+
+- **Deterministic Evaluator** — pattern-based, fast. Catches things like "NTT Data" → "NTT DATA", capitalisation issues, formatting, spacing. Auto-corrects these.
+- **Contextual Evaluator** — LLM-based (Azure OpenAI). Evaluates tone, brand alignment, militaristic language, inclusivity etc. Runs 5 prompts per section — that's up to 40 LLM calls for 8 sections. Returns findings with suggested fixes.
+
+**Step 4 — Findings Aggregation**
+All findings from both evaluators are merged, deduplicated, and aggregated per section with severity weighting (critical → error, medium → warning, low → suggestion).
+
+**Step 5 — Decision Generator**
+Section-level compliance status is determined. The corrected brief is rebuilt with all deterministic auto-fixes and contextual suggestions applied.
+
+**Step 6 — Outputs**
+- A corrected campaign brief JSON is returned to the API (MVP — auto-validated after generation)
+- A full compliance run log is saved to Cosmos DB for traceability — every finding, every fix, which rule triggered it, which evaluator, confidence score
+- Telemetry is emitted to App Insights — latency, token usage, finding counts per run
+
+---
+
+**Post-MVP (Invocation Path 2)**
+When a user manually edits the brief, they can re-trigger the evaluator. This time instead of auto-correcting, it returns section-level findings and suggested fixes for human review before the brief proceeds to Campaign Plan Lab.
+
+---
+
+**Traceability**
+Every run is tracked with a `workflow_id`, `artifact_id`, `validation_run_id`, and `feedback_cycle`. So we know exactly which version of the brief was evaluated, against which version of the rules, and what decisions were made — full audit trail in Cosmos.
+
+---
+
+**Monitoring**
+App Insights captures every compliance run — latency, token usage, failures, finding counts. Compliance run logs in Cosmos give us the detailed audit records.
