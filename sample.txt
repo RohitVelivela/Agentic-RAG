@@ -1,0 +1,24 @@
+1. Loading compliance rules from Cosmos DB
+
+"Before we evaluate anything, the system pulls all 833 live compliance rules from our cloud database. These rules are maintained centrally — any update a compliance owner makes is instantly available to every campaign check. No static rule files, no manual syncs."
+
+2. Building section evaluation plans
+
+"The system reads the campaign brief structure and maps every rule to the relevant section — executive overview, messaging, timelines, budget, etc. It decides which rules apply where, so we're not running every rule against every field. This is what makes the evaluation precise rather than noisy."
+
+3. Running contextual evaluator (longest step)
+
+"This is where the AI reads the actual brief content and checks it against rules that require judgement — things like tone, brand voice, whether claims are substantiated, whether the narrative is consistent. It runs 40 checks in parallel across 8 sections simultaneously. A human reviewer would take hours; this completes in under a minute."
+
+4. Running deterministic evaluator
+
+"Alongside the AI, a rule-based engine checks hard patterns — capitalisation standards ('NTT DATA' not 'NTT Data'), restricted phrases, formatting rules (time formats, currency formats, percentages), forbidden words, mandatory disclaimers. These are binary pass/fail — no ambiguity, no LLM needed. Consistent every single time."
+
+5. Building the corrected brief
+
+"All findings from both evaluators are merged and applied to produce a clean, corrected version of the brief. The system resolves conflicts, prioritises changes by severity, and reconstructs the document section by section."
+
+6. Saving the compliance run log
+
+"Every run is fully auditable — the original brief, every rule that fired, every correction made, the timestamp, and the rule version are all stored in Cosmos DB. If a compliance question comes up six months later, we can replay exactly what was checked and why."
+
